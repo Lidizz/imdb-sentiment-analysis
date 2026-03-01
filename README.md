@@ -1,0 +1,289 @@
+# IMDB Sentiment Analysis: Classic ML vs Deep Learning
+
+Binary sentiment classification on 50,000 IMDB movie reviews.  
+Compares four classic ML models (TF-IDF features) against an LSTM deep learning model and a pre-trained Transformer baseline.
+
+> **Course project**: AI/ML Compulsory Activity  
+> **Dataset:** [IMDB 50K Movie Reviews](https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews)
+
+---
+
+## Table of Contents
+
+- [Project Overview](#project-overview)
+- [Repository Structure](#repository-structure)
+- [Setup](#setup)
+- [Dataset](#dataset)
+- [Usage - Run Notebooks in Order](#usage--run-notebooks-in-order)
+- [Models Implemented](#models-implemented)
+- [Results](#results)
+- [Authors](#authors)
+
+---
+
+## Project Overview
+
+We build a binary sentiment classifier that labels IMDB movie reviews as **positive** or **negative**.  
+The project progresses from interpretable classic ML baselines to a sequence-aware deep learning model, and finishes with a zero-training pre-trained Transformer comparison.
+
+**Key questions we answer:**
+- Can a simple TF-IDF + Logistic Regression baseline match a neural network?
+- What does an LSTM capture that bag-of-words models cannot?
+- How does a purpose-trained model compare to a pre-trained Transformer out of the box?
+
+---
+
+## Repository Structure
+
+```
+imdb-sentiment-analysis/
+├── README.md
+├── requirements.txt              # All dependencies (see Setup)
+├── .gitignore
+│
+├── data/
+│   └── README.md                 # Download instructions for IMDB dataset
+│                                 # (CSV is NOT committed)
+│
+├── notebooks/
+│   ├── 01_data_exploration.ipynb      # EDA: class balance, review lengths, word frequencies
+│   ├── 02_preprocessing.ipynb         # Text cleaning pipeline walkthrough
+│   ├── 03_classic_ml_models.ipynb     # TF-IDF + LogReg, Naive Bayes, SVM, Random Forest
+│   ├── 04_deep_learning_model.ipynb   # Word embeddings + LSTM (Keras/TensorFlow)
+│   └── 05_model_comparison.ipynb      # Side-by-side evaluation + pre-trained baseline
+│
+├── src/
+│   ├── __init__.py
+│   ├── data_loader.py            # Load CSV, apply preprocessing, train/val/test split
+│   ├── preprocessing.py          # HTML removal, lowercasing, stopwords, lemmatisation
+│   ├── features.py               # TF-IDF vectoriser + Keras tokeniser/padding
+│   ├── classic_models.py         # Train and evaluate LogReg, NB, SVM, Random Forest
+│   ├── dl_model.py               # Build, train, and evaluate LSTM model
+│   ├── evaluation.py             # Metrics, confusion matrices, comparison tables
+│   └── utils.py                  # Plotting helpers, model save/load
+│
+├── models/                       # Saved model files (.pkl, .h5) - git-ignored
+│   └── .gitkeep
+│
+├── results/
+│   ├── figures/                  # Generated plots (PNG)
+│   └── metrics/                  # Saved metric CSVs for reproducibility
+│
+├── report/
+│   └── report.pdf                # Final written report
+│
+├── presentation/
+│   └── slides.pdf                # Presentation slides
+│
+└── reflections/
+    ├── ls_reflection.pdf
+    └── cws_reflection.pdf
+```
+
+---
+
+## Setup
+
+### Step 1 - Install Python 3.11
+
+This project requires **Python 3.11 exactly**.
+
+> **Why 3.11 specifically?**  
+> `tensorflow-cpu` (used for the LSTM model) does not have a release for Python 3.12 or 3.13 yet.  
+> Python 3.11 has pre-built wheels for every package in this project, meaning nothing needs to compile from source - installation is fast and requires no C compiler.
+
+**Download:** [python-3.11.9-amd64.exe (Windows 64-bit)](https://www.python.org/downloads/release/python-3119/)
+
+**During installation - important settings:**
+
+If you are running the installer for the first time (no other Python installed):
+- Check **"Add Python to PATH"**
+- Click **Install Now**
+
+If you already have another Python version installed (e.g. 3.12 or 3.13):
+- Verify that **"Add Python to PATH"** is **unchecked**
+- Click **Customize installation**
+- On the Advanced Options screen, **uncheck "Add Python to environment variables"**
+- Leave the install location as the default (`C:\Users\<you>\AppData\Local\Programs\Python\Python311`)
+- Click **Install**
+
+  This keeps your existing Python version as the system default and lets you target 3.11 explicitly using the `py` launcher (see Step 3 below).
+
+**Verify the installation** by opening a new terminal and running:
+
+```powershell
+py --list
+```
+
+You should see both versions listed, for example:
+
+```
+-V:3.13 *  Python 3.13.x    <- your existing default (untouched)
+-V:3.11    Python 3.11.9    <- newly installed
+```
+
+---
+
+### Step 2 - Clone the repository
+
+```bash
+git clone https://github.com/Lidizz/imdb-sentiment-analysis.git
+cd imdb-sentiment-analysis
+```
+
+---
+
+### Step 3 - Create a virtual environment using Python 3.11
+
+A virtual environment isolates this project's packages from the rest of your system.
+
+**If Python 3.11 is your only / default Python:**
+
+```powershell
+python -m venv .venv
+```
+
+**If you have multiple Python versions installed (e.g. also 3.12 or 3.13):**
+
+Use the `py` launcher to target 3.11 explicitly - otherwise the wrong Python version will be used:
+
+```powershell
+py -3.11 -m venv .venv
+```
+
+**Verify the venv is using 3.11** before continuing:
+
+```powershell
+# Activate first
+.venv\Scripts\activate        # Windows
+source .venv/bin/activate     # Mac / Linux
+
+# Then check
+python --version
+# Expected output: Python 3.11.9
+```
+
+If the output shows any other version, delete the `.venv` folder and repeat this step using `py -3.11 -m venv .venv`.
+
+---
+
+### Step 4 - Install dependencies
+
+```powershell
+pip install -r requirements.txt
+```
+
+This will download and install all packages. Expected install time is 5–15 minutes depending on your connection.
+
+> **Install size:** roughly 1–1.5 GB total.  
+> The two largest packages are `tensorflow-cpu` (~500 MB) and the `Hugging Face` model weights (~250 MB).  
+
+---
+
+### Step 5 - Download NLTK data (one-time)
+
+Run the following Python script from the project's root
+
+```powershell
+python download_nltk_data.py
+```
+This downloads the stopword list and WordNet lemmatizer data used in the text preprocessing pipeline (~20 MB total, saved to your home directory).
+
+---
+
+## Dataset
+
+This project uses the **IMDB Dataset of 50K Movie Reviews**.
+
+**Download instructions:**
+1. Go to [https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews](https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews)
+2. Download 
+3. Download dataset as zip (27 MB)
+4. Extract the file `IMDB Dataset.csv`
+3. Place it in this `data/` folder
+
+The dataset is **not committed** to this repository.
+
+**Dataset summary:**
+| Property | Value |
+|---|---|
+| Total reviews | 50,000 |
+| Columns | `review` (text), `sentiment` (positive/negative) |
+| Source | [Kaggle - Lakshmi Srinivas](https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews) |
+| Original paper | Maas et al. (2011), ACL |
+
+---
+
+## Usage - Run Notebooks in Order
+
+Start Jupyter:
+
+```bash
+jupyter notebook
+```
+
+Then run the notebooks in sequence:
+
+| # | Notebook | What it does |
+|---|---|---|
+| 1 | `01_data_exploration.ipynb` | Load data, check class balance, plot review length distributions, word frequency analysis |
+| 2 | `02_preprocessing.ipynb` | Step-by-step text cleaning: HTML removal → lowercasing → stopwords → lemmatisation |
+| 3 | `03_classic_ml_models.ipynb` | TF-IDF feature extraction, train and evaluate LogReg / Naive Bayes / SVM / Random Forest |
+| 4 | `04_deep_learning_model.ipynb` | Word embeddings, LSTM architecture, training curves, evaluation on test set |
+| 5 | `05_model_comparison.ipynb` | All models side-by-side, ROC curves, error analysis, pre-trained Transformer baseline |
+
+Each notebook imports reusable logic from `src/` - no duplicated code between notebooks.
+
+### Live demo (presentation)
+
+```bash
+python demo.py
+```
+
+Type any movie review at the prompt to get a sentiment prediction and confidence score from the best-performing classic model.
+
+---
+
+## Models Implemented
+
+| Model | Approach | Features |
+|---|---|---|
+| Logistic Regression | Classic ML | TF-IDF (unigrams + bigrams) |
+| Multinomial Naive Bayes | Classic ML | TF-IDF |
+| Linear SVM | Classic ML | TF-IDF |
+| Random Forest | Ensemble ML | TF-IDF + GridSearchCV tuning |
+| LSTM | Deep Learning | Trainable word embeddings |
+| Pre-trained Transformer | Zero-shot baseline | Hugging Face `distilbert-base-uncased-finetuned-sst-2-english` |
+
+**Text preprocessing pipeline** (applied to all models):
+1. Remove HTML tags (`<br />` etc.)
+2. Lowercase
+3. Remove punctuation and digits
+4. Remove stopwords (NLTK English list)
+5. Lemmatise (WordNet Lemmatizer)
+
+---
+
+## Results
+
+*Here will we fill our test-set results after running all notebooks.*
+
+| Model | Accuracy | F1-Score | Notes |
+|---|---|---|---|
+| Naive Bayes | - | - | Fast baseline |
+| Logistic Regression | - | - | Typically ~88–89% |
+| SVM | - | - | |
+| Random Forest | - | - | GridSearchCV tuned |
+| LSTM | - | - | Typically ~85–88% |
+| Pre-trained Transformer | - | - | Zero training |
+
+> Expected: Logistic Regression and SVM are strong baselines on this dataset. LSTM may not exceed them on IMDB specifically due to the dataset's relatively bag-of-words-friendly structure, but captures word order and context that TF-IDF cannot represent. The pre-trained Transformer demonstrates how much is achievable with zero training.
+
+---
+
+## Authors
+
+- **Lidor Shachar** - Data exploration, preprocessing pipeline, LogReg + NB models, report sections 1 / 3 / 4
+- **Christin Wøien Skattum** - SVM + Random Forest, LSTM model, model comparison, report sections 2 / 5 / 6
+
+Course: AI3000R-1 Artificial Intelligence for Business Applications - Spring 2026

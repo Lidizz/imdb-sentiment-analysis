@@ -1,0 +1,57 @@
+# IMDB Sentiment Analysis - Python Dependencies
+# Install: pip install -r requirements.txt
+# Python: 3.11 required
+
+# Core data handling
+numpy==1.26.4
+pandas==2.2.1
+
+# Visualisation
+matplotlib==3.8.3
+seaborn==0.13.2
+
+# Classic ML models
+scikit-learn==1.4.1.post1
+
+# Deep Learning: LSTM
+tensorflow-cpu==2.16.1
+# Using tensorflow-cpu (~500 MB) not the full GPU build (~2000 MB).
+
+# NLP utilities
+nltk==3.8.1
+
+# Pre-trained Transformer baseline
+transformers==4.38.2
+# If you get an error, run this in your terminal first: set USE_TF=1 
+
+# Jupyter Notebook
+jupyter==1.0.0
+notebook==7.1.1
+ipykernel==6.29.3
+
+# Utilities and performance
+tqdm==4.66.2
+joblib==1.3.2
+
+# scikit-learn-Classes used:
+#   sklearn.feature_extraction.text -> CountVectorizer, TfidfVectorizer
+#   sklearn.linear_model            -> LogisticRegression
+#   sklearn.naive_bayes             -> MultinomialNB
+#   sklearn.svm                     -> LinearSVC
+#   sklearn.ensemble                -> RandomForestClassifier
+#   sklearn.model_selection         -> train_test_split, GridSearchCV, cross_val_score
+#   sklearn.metrics                 -> classification_report, confusion_matrix,
+#                                      accuracy_score, f1_score
+
+# tensorflow-Classes used:
+#   tensorflow.keras.models    -> Sequential
+#   tensorflow.keras.layers    -> Embedding, LSTM, Dense, Dropout, Bidirectional
+#   tensorflow.keras.callbacks -> EarlyStopping, ModelCheckpoint
+#   keras                      -> Tokenizer, pad_sequences
+
+# nltk-Classes used:
+#   nltk.corpus -> stopwords
+#   nltk.stem   -> WordNetLemmatizer
+
+# transformers-Classes used:
+#   transformers -> pipeline
