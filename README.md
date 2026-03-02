@@ -216,7 +216,8 @@ The dataset is **not committed** to this repository.
 
 ## Usage - Run Notebooks in Order
 
-Start Jupyter:
+(Optional) Start Jupyter:  
+NOTE: if you are using an IDE such as PyCharm or a text editor such as Visual Studio Code with added extensions, you do not need to manually launch the application local web server. The command will open the interface in your browser if needed.
 
 ```bash
 jupyter notebook
