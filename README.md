@@ -233,7 +233,9 @@ Then run the notebooks in sequence:
 | 4 | `04_deep_learning_model.ipynb` | Word embeddings, LSTM architecture, training curves, evaluation on test set |
 | 5 | `05_model_comparison.ipynb` | All models side-by-side, ROC curves, error analysis, pre-trained Transformer baseline |
 
-`02_preprocessing.ipynb` and all subsequent modeling notebooks import reusable logic from `src/`. The EDA notebook (`01_data_exploration.ipynb`) is intentionally lightweight and can remain standalone.
+Each notebook imports reusable logic from `src/`, no duplicated code between notebooks.
+  - **NOTE:** The EDA notebook (`01_data_exploration.ipynb`) is a lightweight standalone.
+
 
 ### Live demo (presentation)
 
