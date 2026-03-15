@@ -233,8 +233,9 @@ Then run the notebooks in sequence:
 | 4 | `04_deep_learning_model.ipynb` | Word embeddings, LSTM architecture, training curves, evaluation on test set |
 | 5 | `05_model_comparison.ipynb` | All models side-by-side, ROC curves, error analysis, pre-trained Transformer baseline |
 
-Most notebooks import reusable logic from `src/` to avoid duplicating model/preprocessing code.
-  - **NOTE:** The EDA notebook (`01_data_exploration.ipynb`) is intentionally lightweight and can remain standalone.
+Each notebook imports reusable logic from `src/`, no duplicated code between notebooks.
+  - **NOTE:** The EDA notebook (`01_data_exploration.ipynb`) is a lightweight standalone.
+
 
 ### Workflow: notebooks vs `src/`
 
@@ -246,15 +247,13 @@ Most notebooks import reusable logic from `src/` to avoid duplicating model/prep
   - Demonstrates each pipeline stage with visuals, before/after examples, and commentary
   - Calls functions from `src/` instead of redefining them inline
 
-- **For most users/graders**
+- **Users**
   - Run notebooks in order and inspect outputs
   - No need to manually edit files in `src/` for normal usage
 
 - **Why this structure is used**
   - Better maintainability (one fix in `src/` applies everywhere)
   - Better reproducibility (same logic reused across notebooks)
-  - Better software engineering practice for academic projects
-
 
 ### Live demo (presentation)
 
