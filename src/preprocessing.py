@@ -91,8 +91,8 @@ def preprocess_texts_batch(
     progress_callback: Optional[Callable[[int], None]] = None,
 ) -> List[str]:
     """Preprocess many texts using batched POS tagging for better performance.
-
-    Keeps the same logic/quality as preprocess_text, but runs faster on large datasets.
+    We keeps the same logic/quality as preprocess_text, but we added batching for faster processing 
+    (for demo purposes).
     """
     text_list = [str(text) for text in texts]
     if not text_list:
