@@ -11,6 +11,7 @@ packages = [
     ('stopwords', 'corpora/stopwords'),
     ('wordnet',   'corpora/wordnet'),
     ('omw-1.4',   'corpora/omw-1.4'),
+    ('averaged_perceptron_tagger', 'taggers/averaged_perceptron_tagger'),
 ]
 
 print("Downloading NLTK data...\n")

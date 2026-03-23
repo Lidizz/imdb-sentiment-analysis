@@ -1,113 +1,129 @@
-"""
-Text Preprocessing Pipeline for IMDB Sentiment Analysis
-========================================================
-Pipeline steps (applied in order):
-    1. HTML tag removal
-    2. Lowercasing
-    3. Punctuation removal
-    4. Stopword removal  (NLTK English stopwords)
-    5. Lemmatization     (WordNetLemmatizer)
-"""
-
-# --- Importer ---
+"""Text preprocessing pipeline for IMDB sentiment analysis."""
 import re
-import string
+from functools import lru_cache
+from typing import Callable, Iterable, List, Optional
 import nltk
 from nltk.corpus import stopwords
+from nltk.corpus import wordnet
+from nltk import pos_tag, pos_tag_sents
 from nltk.stem import WordNetLemmatizer
 
-# --- Automatisk nedlasting av NLTK-data ---
-# Kjøres én gang når fila importeres.
-# Sjekker om stopwords, wordnet og omw-1.4 allerede er installert.
-# Laster dem ned stille i bakgrunnen hvis de mangler.
-for _pkg, _path in [("stopwords", "corpora/stopwords"),
-                    ("wordnet",   "corpora/wordnet"),
-                    ("omw-1.4",   "corpora/omw-1.4")]:
-    try:
-        nltk.data.find(_path)
-    except LookupError:
-        nltk.download(_pkg, quiet=True)
+# Download NLTK data (run once)
+nltk.download('stopwords', quiet=True)
+nltk.download('wordnet', quiet=True)
+nltk.download('omw-1.4', quiet=True)
+nltk.download('averaged_perceptron_tagger', quiet=True)
 
-# --- Globale variabler (lages én gang, gjenbrukes for alle 50 000 rader) ---
-# Det er dyrt å opprette disse inne i en funksjon som kalles 50 000 ganger.
-_STOP_WORDS  = set(stopwords.words("english"))       # ~180 engelske stoppord
-_LEMMATIZER  = WordNetLemmatizer()                   # lemmatiseringsverktøy
-_HTML_RE     = re.compile(r"<[^>]+>")                # regex som matcher HTML-tagger som <br />, <b>
-_PUNCT_TABLE = str.maketrans("", "", string.punctuation)  # tabell for å fjerne tegnsetting
+_HTML_TAG_RE = re.compile(r'<.*?>')
+_SPECIAL_CHAR_RE = re.compile(r'[^a-zA-Z\s]')
 
+_NEGATION_WORDS = {
+    'not', 'no', 'nor', 'neither', 'never', 'nobody',
+    'nothing', 'nowhere', 'hardly', 'barely', 'scarcely'
+}
 
-def remove_html(text: str) -> str:
-    # Erstatter alle HTML-tagger (<br />, <b>, <i> osv.) med et mellomrom.
-    # " ".join(text.split()) fjerner doble mellomrom som kan oppstå.
-    text = _HTML_RE.sub(" ", text)
-    return " ".join(text.split())
+_STOP_WORDS = set(stopwords.words('english')) - _NEGATION_WORDS
+_LEMMATIZER = WordNetLemmatizer()
 
+def _to_wordnet_pos(treebank_tag: str) -> str:
+    """Map Penn Treebank POS tags to WordNet POS tags."""
+    if treebank_tag.startswith('J'):
+        return wordnet.ADJ
+    if treebank_tag.startswith('V'):
+        return wordnet.VERB
+    if treebank_tag.startswith('R'):
+        return wordnet.ADV
+    return wordnet.NOUN
 
-def lowercase(text: str) -> str:
-    # Gjør all tekst om til små bokstaver.
+def remove_html_tags(text: str) -> str:
+    """Remove HTML tags from text. IMDB reviews contain <br /> tags."""
+    return _HTML_TAG_RE.sub('', text)
+
+def remove_special_characters(text: str) -> str:
+    """Keep only letters and spaces. Remove punctuation, numbers, etc."""
+    return _SPECIAL_CHAR_RE.sub('', text)
+
+def to_lowercase(text: str) -> str:
+    """Convert to lowercase for consistent vocabulary."""
     return text.lower()
 
-
-def remove_punctuation(text: str) -> str:
-    # Fjerner alle tegnsetningstegn: . , ! ? " ' ( ) osv.
-    # str.translate med _PUNCT_TABLE sletter tegn uten å erstatte dem.
-    return text.translate(_PUNCT_TABLE)
-
-
 def remove_stopwords(text: str) -> str:
-    # Deler teksten inn i enkeltord (tokens).
-    # Beholder bare ord som IKKE er i stoppordlisten.
+    """Remove common English words that carry no sentiment signal."""
+    return ' '.join([w for w in text.split() if w not in _STOP_WORDS])
+
+
+@lru_cache(maxsize=200_000)
+def _lemmatize_word(word: str, wn_pos: str) -> str:
+    """Cache per-token lemmatization to speed repeated words across corpus."""
+    return _LEMMATIZER.lemmatize(word, wn_pos)
+
+def lemmatize_text(text: str) -> str:
+    """Reduce words to base form using POS-aware lemmatization."""
     tokens = text.split()
-    return " ".join(t for t in tokens if t not in _STOP_WORDS)
+    if not tokens:
+        return text
 
+    tagged_words = pos_tag(tokens)
+    return ' '.join(
+        [_lemmatize_word(word, _to_wordnet_pos(pos)) for word, pos in tagged_words]
+    )
 
-def lemmatize(text: str) -> str:
-    # Reduserer hvert ord til sin grunnform ved hjelp av en ordbok (WordNet).
-    # Bedre enn stemming fordi resultatet alltid er et ekte ord.
-    tokens = text.split()
-    return " ".join(_LEMMATIZER.lemmatize(t) for t in tokens)
+def preprocess_text(text: str) -> str:
+    """Full preprocessing pipeline. Each step has a reason:
 
-
-def preprocess(text: str) -> str:
-    # Hovedfunksjonen — kjører alle fem steg
-    # Stegene er avhengige av rekkefølgen:
-    #   HTML må fjernes først (ellers kan < og > forstyrre resten)
-    #   Lowercase før stopword-sjekk (stoppordlisten er lowercase)
-    #   Punktum fjernes før lemmatisering (ellers feiltolkes "film." som eget token)
-    text = remove_html(text)
-    text = lowercase(text)
-    text = remove_punctuation(text)
+    1. HTML removal      — IMDB-specific noise (Ch 04: signal vs noise)
+    2. Lowercase          — 'Good' and 'good' are the same word
+    3. Special chars      — punctuation doesn't help bag-of-words models
+    4. Stopword removal   — 'the', 'is', 'at' carry no sentiment
+    5. Lemmatization      — reduces vocabulary size, groups related words
+    """
+    text = remove_html_tags(text)
+    text = to_lowercase(text)
+    text = remove_special_characters(text)
     text = remove_stopwords(text)
-    text = lemmatize(text)
+    text = lemmatize_text(text)
     return text
 
 
-if __name__ == "__main__":
-    # Denne blokken kjøres KUN når fila startes direkte: python preprocessing.py
-    # Når preprocessing.py importeres fra en annen fil, hoppes denne over.
-    import os
-    import pandas as pd
-    from tqdm import tqdm
+def preprocess_texts_batch(
+    texts: Iterable[str],
+    batch_size: int = 1000,
+    progress_callback: Optional[Callable[[int], None]] = None,
+) -> List[str]:
+    """Preprocess many texts using batched POS tagging for better performance.
 
-    tqdm.pandas()  # legger til progress_apply() på pandas Series
+    Keeps the same logic/quality as preprocess_text, but runs faster on large datasets.
+    """
+    text_list = [str(text) for text in texts]
+    if not text_list:
+        return []
 
-    base     = os.path.join(os.path.dirname(__file__), "..")
-    in_path  = os.path.join(base, "data", "IMDB Dataset.csv")
-    out_path = os.path.join(base, "data", "IMDB_preprocessed.csv")
+    cleaned = []
+    for text in text_list:
+        text = remove_html_tags(text)
+        text = to_lowercase(text)
+        text = remove_special_characters(text)
+        text = remove_stopwords(text)
+        cleaned.append(text)
 
-    print("Loading data...")
-    df = pd.read_csv(in_path)
-    print(f"  {len(df)} reviews loaded")
+    outputs: List[str] = []
+    for start in range(0, len(cleaned), batch_size):
+        batch = cleaned[start:start + batch_size]
+        token_sents = [text.split() for text in batch]
+        tagged_sents = pos_tag_sents(token_sents)
 
-    # Kaller preprocess() på hver rad i 'review'-kolonnen.
-    # Resultatet lagres i en ny kolonne 'clean_review'.
-    print("Preprocessing reviews (this takes a few minutes)...")
-    df["clean_review"] = df["review"].progress_apply(preprocess)
+        for tagged_words in tagged_sents:
+            if not tagged_words:
+                outputs.append('')
+                if progress_callback is not None:
+                    progress_callback(1)
+                continue
+            lemma_tokens = [
+                _lemmatize_word(word, _to_wordnet_pos(pos))
+                for word, pos in tagged_words
+            ]
+            outputs.append(' '.join(lemma_tokens))
+            if progress_callback is not None:
+                progress_callback(1)
 
-    # Lagrer DataFrame med alle tre kolonner:
-    #   review       — original tekst
-    #   sentiment    — etikett (positive / negative)
-    #   clean_review — ferdig prosessert tekst
-    df.to_csv(out_path, index=False)
-    print(f"\nSaved to {out_path}")
-    print(f"Columns: {df.columns.tolist()}")
+    return outputs
