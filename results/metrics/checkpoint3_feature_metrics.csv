@@ -1,5 +1,5 @@
 representation,val_accuracy,val_f1,experiment
 BoW (unigram),0.8694840687908278,0.8697272122421823,bow_vs_tfidf
 TF-IDF (unigram),0.8857485668577523,0.8868646864686469,bow_vs_tfidf
-"(1, 1)",0.8857485668577523,0.8868646864686469,tfidf_ngram_comparison
-"(1, 2)",0.8874816691107852,0.8886249670097651,tfidf_ngram_comparison
+ngram_1-1,0.8857485668577523,0.8868646864686469,tfidf_ngram_comparison
+ngram_1-2,0.8874816691107852,0.8886249670097651,tfidf_ngram_comparison

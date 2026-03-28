@@ -1,15 +1,25 @@
 """Feature extraction utilities for classic NLP models."""
 
-from typing import Dict, Iterable, Optional, Tuple
+from typing import Iterable, Optional, Tuple, TypedDict, Union
 
+from scipy.sparse import csr_matrix
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
-VectorizedSplits = Dict[str, object]
+VectorizerType = Union[CountVectorizer, TfidfVectorizer]
+
+
+class VectorizedSplits(TypedDict, total=False):
+    """Container for vectorized dataset splits and fitted vectorizer."""
+
+    train: csr_matrix
+    val: csr_matrix
+    test: csr_matrix
+    vectorizer: VectorizerType
 
 
 def _fit_and_transform(
-    vectorizer,
+    vectorizer: VectorizerType,
     train_texts: Iterable[str],
     val_texts: Optional[Iterable[str]] = None,
     test_texts: Optional[Iterable[str]] = None,
