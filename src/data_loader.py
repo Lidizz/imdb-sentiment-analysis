@@ -93,12 +93,24 @@ def split_data(
     if label_col not in df.columns:
         raise ValueError(f"Column '{label_col}' was not found in DataFrame.")
 
+    split_sizes = {
+        "train_size": train_size,
+        "val_size": val_size,
+        "test_size": test_size,
+    }
+    for name, value in split_sizes.items():
+        if value <= 0 or value >= 1:
+            raise ValueError(f"{name} must be in the open interval (0, 1), got {value}.")
+
     total = train_size + val_size + test_size
     if abs(total - 1.0) > 1e-9:
         raise ValueError(
             f"Split sizes must sum to 1.0, got {total:.6f} "
             f"({train_size}, {val_size}, {test_size})."
         )
+
+    if train_size + val_size <= 0:
+        raise ValueError("train_size + val_size must be greater than 0.")
 
     train_val, test = train_test_split(
         df,
