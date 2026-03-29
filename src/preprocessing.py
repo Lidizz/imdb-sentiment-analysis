@@ -26,7 +26,7 @@ _STOP_WORDS = set(stopwords.words('english')) - _NEGATION_WORDS
 _LEMMATIZER = WordNetLemmatizer()
 
 def _to_wordnet_pos(treebank_tag: str) -> str:
-    """Map Penn Treebank POS tags to WordNet POS tags."""
+    """Map Penn Treebank POS tags to WordNet POS tags"""
     if treebank_tag.startswith('J'):
         return wordnet.ADJ
     if treebank_tag.startswith('V'):
@@ -36,7 +36,7 @@ def _to_wordnet_pos(treebank_tag: str) -> str:
     return wordnet.NOUN
 
 def remove_html_tags(text: str) -> str:
-    """Remove HTML tags from text. IMDB reviews contain <br /> tags."""
+    """Remove HTML tags from text"""
     return _HTML_TAG_RE.sub('', text)
 
 def remove_special_characters(text: str) -> str:
@@ -44,21 +44,21 @@ def remove_special_characters(text: str) -> str:
     return _SPECIAL_CHAR_RE.sub('', text)
 
 def to_lowercase(text: str) -> str:
-    """Convert to lowercase for consistent vocabulary."""
+    """Convert to lowercase for consistent vocabulary"""
     return text.lower()
 
 def remove_stopwords(text: str) -> str:
-    """Remove common English words that carry no sentiment signal."""
+    """Remove common English words that carry no sentiment signal"""
     return ' '.join([w for w in text.split() if w not in _STOP_WORDS])
 
 
 @lru_cache(maxsize=200_000)
 def _lemmatize_word(word: str, wn_pos: str) -> str:
-    """Cache per-token lemmatization to speed repeated words across corpus."""
+    """Cache per-token lemmatization to speed repeated words"""
     return _LEMMATIZER.lemmatize(word, wn_pos)
 
 def lemmatize_text(text: str) -> str:
-    """Reduce words to base form using POS-aware lemmatization."""
+    """Reduce words to base form using POS-aware lemmatization"""
     tokens = text.split()
     if not tokens:
         return text
@@ -69,9 +69,9 @@ def lemmatize_text(text: str) -> str:
     )
 
 def preprocess_text(text: str) -> str:
-    """Full preprocessing pipeline. Each step has a reason:
+    """Full preprocessing pipeline:
 
-    1. HTML removal      — IMDB-specific noise (Ch 04: signal vs noise)
+    1. HTML removal       — IMDB-specific noise (signal vs noise)
     2. Lowercase          — 'Good' and 'good' are the same word
     3. Special chars      — punctuation doesn't help bag-of-words models
     4. Stopword removal   — 'the', 'is', 'at' carry no sentiment
@@ -90,11 +90,7 @@ def preprocess_texts_batch(
     batch_size: int = 1000,
     progress_callback: Optional[Callable[[int], None]] = None,
 ) -> List[str]:
-    """Preprocess many texts using batched POS tagging for better performance.
-
-    This function preserves the same preprocessing logic as ``preprocess_text``,
-    but runs POS tagging in batches to speed up large dataset processing.
-    """
+    """Preprocess using POS tagging in batches to speed up large dataset processing"""
     text_list = [str(text) for text in texts]
     if not text_list:
         return []
