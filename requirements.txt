@@ -13,9 +13,15 @@ seaborn==0.13.2
 # Classic ML models
 scikit-learn==1.4.1.post1
 
-# Deep Learning: LSTM
-tensorflow-cpu==2.16.1
-# Using tensorflow-cpu (~500 MB) not the full GPU build (~2000 MB).
+# Deep Learning Core (Cross-Platform)
+tensorflow-intel==2.16.1; sys_platform == 'win32'
+tensorflow==2.16.1; sys_platform != 'win32'
+keras==3.0.5
+
+# Version-lock dependencies (Windows fixes)
+ml-dtypes==0.3.2; sys_platform == 'win32'
+protobuf==4.25.9; sys_platform == 'win32'
+dm-tree==0.1.10
 
 # NLP utilities
 nltk==3.8.1
