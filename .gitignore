@@ -11,3 +11,4 @@ legacy/
 untracked/
 models/
 presentation/
+.claude/

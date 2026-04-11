@@ -62,6 +62,9 @@ def plot_confusion_matrices_grid(
     figsize: tuple[int, int] = (12, 10),
 ) -> plt.Figure:
     """Plot confusion matrices for multiple models in a single figure."""
+    if not predictions:
+        raise ValueError("predictions must contain at least one model.")
+
     model_names = list(predictions.keys())
     n_models = len(model_names)
     n_rows = (n_models + n_cols - 1) // n_cols

@@ -108,18 +108,22 @@ def get_tokenized_padded_sequences(
     try:
         try:
             tokenizer_module = importlib.import_module("keras.preprocessing.text")
+        except (ModuleNotFoundError, ImportError):
+            tokenizer_module = importlib.import_module("tensorflow.keras.preprocessing.text")
+
+        try:
             Tokenizer = getattr(tokenizer_module, "Tokenizer")
-        except Exception:
+        except AttributeError:
             tokenizer_module = importlib.import_module("tensorflow.keras.preprocessing.text")
             Tokenizer = getattr(tokenizer_module, "Tokenizer")
 
         try:
             utils_module = importlib.import_module("keras.utils")
             pad_sequences = getattr(utils_module, "pad_sequences")
-        except Exception:
+        except (ModuleNotFoundError, ImportError, AttributeError):
             sequence_module = importlib.import_module("tensorflow.keras.preprocessing.sequence")
             pad_sequences = getattr(sequence_module, "pad_sequences")
-    except Exception as exc:
+    except (ModuleNotFoundError, ImportError, AttributeError) as exc:
         raise ImportError(
             "Deep-learning sequence features require keras. "
             "Install keras (or tensorflow with keras support) to use this function."

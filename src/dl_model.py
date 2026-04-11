@@ -5,9 +5,8 @@ from typing import Dict, Iterable, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
-from keras import Sequential
-from keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras import Model, Sequential
+from keras.callbacks import EarlyStopping, History, ModelCheckpoint
 from keras.layers import Dense, Dropout, Embedding, Input, LSTM
 from keras.optimizers import Adam
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
@@ -19,12 +18,12 @@ MetricsResult = Tuple[Dict[str, float], np.ndarray, np.ndarray]
 def _to_numpy_1d(values: Iterable[int]) -> np.ndarray:
     """Convert labels to a 1D numpy array without unnecessary list materialization."""
     if isinstance(values, np.ndarray):
-        return values
+        return np.asarray(values).reshape(-1)
     if hasattr(values, "to_numpy"):
-        return np.asarray(values.to_numpy())
+        return np.asarray(values.to_numpy()).reshape(-1)
     if hasattr(values, "__array__"):
-        return np.asarray(values)
-    return np.fromiter(values, dtype=np.int64)
+        return np.asarray(values).reshape(-1)
+    return np.fromiter(values, dtype=np.int64).reshape(-1)
 
 
 def build_lstm_model(
@@ -34,7 +33,7 @@ def build_lstm_model(
     lstm_units: int = 128,
     dropout_rate: float = 0.3,
     learning_rate: float = 1e-3,
-) -> tf.keras.Model:
+) -> Model:
     """Build and compile an LSTM model for binary sentiment classification."""
     model = Sequential(
         [
@@ -54,7 +53,7 @@ def build_lstm_model(
 
 
 def train_lstm_model(
-    model: tf.keras.Model,
+    model: Model,
     X_train: np.ndarray,
     y_train: Iterable[int],
     X_val: np.ndarray,
@@ -67,7 +66,7 @@ def train_lstm_model(
     min_delta: float = 0.0,
     model_path: Optional[Path] = None,
     verbose: int = 1,
-) -> tf.keras.callbacks.History:
+) -> History:
     """Train an LSTM model with early stopping and optional checkpointing."""
     y_train_array = _to_numpy_1d(y_train)
     y_val_array = _to_numpy_1d(y_val)
@@ -106,7 +105,7 @@ def train_lstm_model(
 
 
 def evaluate_lstm_model(
-    model: tf.keras.Model,
+    model: Model,
     X_eval: np.ndarray,
     y_eval: Iterable[int],
     threshold: float = 0.5,
@@ -125,7 +124,7 @@ def evaluate_lstm_model(
     return metrics, y_pred, y_prob
 
 
-def plot_training_history(history: tf.keras.callbacks.History) -> plt.Figure:
+def plot_training_history(history: History) -> plt.Figure:
     """Create a two-panel plot for training/validation accuracy and loss."""
     hist = history.history
 
