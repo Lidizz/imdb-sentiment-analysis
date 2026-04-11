@@ -61,3 +61,20 @@ joblib==1.3.2
 
 # transformers-Classes used:
 #   transformers -> pipeline
+
+
+
+
+
+# ### Fast validation after code changes
+
+# If you changed code in `src/` and want a quick sanity check without rerunning all notebooks:
+
+# ```powershell
+# python quick_smoke_check.py
+# ```
+
+# This runs a tiny end-to-end smoke test for:
+# - TF-IDF + Linear SVM path
+# - Tokenization + padding path
+# - LSTM build/train/evaluate path (1 mini epoch on tiny synthetic data)

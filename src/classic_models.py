@@ -81,7 +81,7 @@ def train_svm(
     """
     model = LinearSVC(
         C=C,
-        dual=True,
+        dual="auto",
         max_iter=2000,
         random_state=random_state,
     )

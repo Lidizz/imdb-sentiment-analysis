@@ -12,3 +12,5 @@ untracked/
 models/
 presentation/
 .claude/
+
+quick_smoke_check.py
