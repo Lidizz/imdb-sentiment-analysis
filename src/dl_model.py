@@ -6,14 +6,25 @@ from typing import Dict, Iterable, Optional, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+from keras import Sequential
+from keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras.layers import Dense, Dropout, Embedding, Input, LSTM
+from keras.optimizers import Adam
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-from tensorflow.keras import Sequential
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-from tensorflow.keras.layers import Dense, Dropout, Embedding, Input, LSTM
-from tensorflow.keras.optimizers import Adam
 
 
 MetricsResult = Tuple[Dict[str, float], np.ndarray, np.ndarray]
+
+
+def _to_numpy_1d(values: Iterable[int]) -> np.ndarray:
+    """Convert labels to a 1D numpy array without unnecessary list materialization."""
+    if isinstance(values, np.ndarray):
+        return values
+    if hasattr(values, "to_numpy"):
+        return np.asarray(values.to_numpy())
+    if hasattr(values, "__array__"):
+        return np.asarray(values)
+    return np.fromiter(values, dtype=np.int64)
 
 
 def build_lstm_model(
@@ -58,6 +69,9 @@ def train_lstm_model(
     verbose: int = 1,
 ) -> tf.keras.callbacks.History:
     """Train an LSTM model with early stopping and optional checkpointing."""
+    y_train_array = _to_numpy_1d(y_train)
+    y_val_array = _to_numpy_1d(y_val)
+
     callbacks = [
         EarlyStopping(
             monitor=monitor,
@@ -81,8 +95,8 @@ def train_lstm_model(
 
     history = model.fit(
         X_train,
-        np.asarray(list(y_train)),
-        validation_data=(X_val, np.asarray(list(y_val))),
+        y_train_array,
+        validation_data=(X_val, y_val_array),
         batch_size=batch_size,
         epochs=epochs,
         callbacks=callbacks,
@@ -98,7 +112,7 @@ def evaluate_lstm_model(
     threshold: float = 0.5,
 ) -> MetricsResult:
     """Evaluate an LSTM model and return metrics, labels, and probabilities."""
-    y_true = np.asarray(list(y_eval)).astype(int)
+    y_true = _to_numpy_1d(y_eval).astype(int)
     y_prob = model.predict(X_eval, verbose=0).reshape(-1)
     y_pred = (y_prob >= threshold).astype(int)
 

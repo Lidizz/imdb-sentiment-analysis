@@ -1,12 +1,11 @@
 """Feature extraction utilities for classic and deep NLP models."""
 
-from typing import Iterable, Optional, Tuple, TypedDict, Union
+import importlib
+from typing import Any, Iterable, Optional, Tuple, TypedDict, Union
 
 import numpy as np
 from scipy.sparse import csr_matrix
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.preprocessing.text import Tokenizer
 
 
 VectorizerType = Union[CountVectorizer, TfidfVectorizer]
@@ -27,7 +26,7 @@ class SequenceSplits(TypedDict, total=False):
     train: np.ndarray
     val: np.ndarray
     test: np.ndarray
-    tokenizer: Tokenizer
+    tokenizer: Any
     vocab_size: int
     max_sequence_length: int
 
@@ -106,6 +105,26 @@ def get_tokenized_padded_sequences(
 
     The tokenizer is fit only on the training split to avoid leakage.
     """
+    try:
+        try:
+            tokenizer_module = importlib.import_module("keras.preprocessing.text")
+            Tokenizer = getattr(tokenizer_module, "Tokenizer")
+        except Exception:
+            tokenizer_module = importlib.import_module("tensorflow.keras.preprocessing.text")
+            Tokenizer = getattr(tokenizer_module, "Tokenizer")
+
+        try:
+            utils_module = importlib.import_module("keras.utils")
+            pad_sequences = getattr(utils_module, "pad_sequences")
+        except Exception:
+            sequence_module = importlib.import_module("tensorflow.keras.preprocessing.sequence")
+            pad_sequences = getattr(sequence_module, "pad_sequences")
+    except Exception as exc:
+        raise ImportError(
+            "Deep-learning sequence features require keras. "
+            "Install keras (or tensorflow with keras support) to use this function."
+        ) from exc
+
     train_texts = list(train_texts)
     if val_texts is not None:
         val_texts = list(val_texts)
