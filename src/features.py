@@ -106,6 +106,12 @@ def get_tokenized_padded_sequences(
 
     The tokenizer is fit only on the training split to avoid leakage.
     """
+    train_texts = list(train_texts)
+    if val_texts is not None:
+        val_texts = list(val_texts)
+    if test_texts is not None:
+        test_texts = list(test_texts)
+
     tokenizer = Tokenizer(num_words=num_words, oov_token=oov_token)
     tokenizer.fit_on_texts(train_texts)
 
