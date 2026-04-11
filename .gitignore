@@ -9,3 +9,6 @@ __pycache__/
 plan/
 legacy/
 untracked/
+models/
+presentation/
+.claude/
