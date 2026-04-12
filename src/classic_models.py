@@ -1,5 +1,6 @@
 """Classic machine-learning training utilities for sentiment classification."""
 
+import time
 from typing import Any, Dict, Iterable, Optional, Tuple
 
 import numpy as np
@@ -12,7 +13,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import LinearSVC
 
-ModelResult = Tuple[BaseEstimator, np.ndarray, str]
+# (model, predictions, classification_report, training_time_seconds)
+ModelResult = Tuple[BaseEstimator, np.ndarray, str, float]
 
 
 def _fit_predict_report(
@@ -23,10 +25,12 @@ def _fit_predict_report(
     y_eval: Iterable[int],
 ) -> ModelResult:
     """Train a model, predict on eval split, and return classification report text."""
+    t0 = time.perf_counter()
     model.fit(X_train, y_train)
+    training_time_s = time.perf_counter() - t0
     y_pred = model.predict(X_eval)
     report = classification_report(y_eval, y_pred, digits=4)
-    return model, y_pred, report
+    return model, y_pred, report, training_time_s
 
 
 def train_logistic_regression(
