@@ -28,6 +28,7 @@ nltk==3.8.1
 
 # Pre-trained Transformer baseline
 transformers==4.38.2
+tf-keras==2.16.0
 # If you get an error, run this in your terminal first: set USE_TF=1 
 
 # Jupyter Notebook
