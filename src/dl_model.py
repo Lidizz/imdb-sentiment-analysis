@@ -1,5 +1,6 @@
 """Deep-learning utilities for LSTM sentiment classification."""
 
+import time
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Tuple
 
@@ -66,8 +67,13 @@ def train_lstm_model(
     min_delta: float = 0.0,
     model_path: Optional[Path] = None,
     verbose: int = 1,
-) -> History:
-    """Train an LSTM model with early stopping and optional checkpointing."""
+) -> Tuple[History, float]:
+    """Train an LSTM model with early stopping and optional checkpointing.
+
+    Returns:
+        (history, training_time_s) — Keras History object and total wall-clock
+        training time in seconds.
+    """
     y_train_array = _to_numpy_1d(y_train)
     y_val_array = _to_numpy_1d(y_val)
 
@@ -92,6 +98,7 @@ def train_lstm_model(
             )
         )
 
+    t0 = time.perf_counter()
     history = model.fit(
         X_train,
         y_train_array,
@@ -101,7 +108,8 @@ def train_lstm_model(
         callbacks=callbacks,
         verbose=verbose,
     )
-    return history
+    training_time_s = time.perf_counter() - t0
+    return history, training_time_s
 
 
 def evaluate_lstm_model(
