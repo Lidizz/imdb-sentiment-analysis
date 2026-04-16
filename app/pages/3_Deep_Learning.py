@@ -198,5 +198,5 @@ try:
     st.caption(
         "Val and test metrics are consistent (within 1 pp), confirming generalisation without overfitting."
     )
-except Exception:
-    pass
+except (NameError, KeyError):
+    st.info("LSTM test metrics not available. Run notebook 04 to generate them.")

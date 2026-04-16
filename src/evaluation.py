@@ -107,9 +107,9 @@ def plot_confusion_matrices_grid(
 
     fig.suptitle(
         "Confusion Matrices: Classic Models\nGreen = correct  |  Red = error",
-        fontsize=10, y=1.01,
+        fontsize=10,
     )
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
     return fig
 
 

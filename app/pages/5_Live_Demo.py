@@ -14,6 +14,7 @@ import importlib
 
 import numpy as np
 import streamlit as st
+from scipy.special import expit as _sigmoid
 
 from _shared import get_classic_models, get_lstm, get_vectorizer
 from src.preprocessing import preprocess_text
@@ -140,15 +141,18 @@ if analyse_btn and user_text.strip():
                     "Try a longer review with more content words."
                 )
 
+    # ── Guard: stop if preprocessing emptied the input ────────────────────────
+    if not preprocessed.strip():
+        st.stop()
+
     # ── TF-IDF features ───────────────────────────────────────────────────────
-    X_vec = vectorizer.transform([preprocessed]) if vectorizer and preprocessed.strip() else None
+    X_vec = vectorizer.transform([preprocessed]) if vectorizer else None
 
     # ── Classic model predictions ─────────────────────────────────────────────
     results: dict[str, tuple[int, float]] = {}
 
     for model_name, model in classic_models.items():
         if X_vec is None:
-            results[model_name] = (0, 0.5)
             continue
         try:
             pred = int(model.predict(X_vec)[0])
@@ -157,7 +161,7 @@ if analyse_btn and user_text.strip():
                 confidence = float(proba[1])
             elif hasattr(model, "decision_function"):
                 score = float(model.decision_function(X_vec)[0])
-                confidence = float(1.0 / (1.0 + np.exp(-score)))  # sigmoid
+                confidence = float(_sigmoid(score))
             else:
                 confidence = 1.0 if pred == 1 else 0.0
             results[model_name] = (pred, confidence)

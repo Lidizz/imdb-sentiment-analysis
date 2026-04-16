@@ -140,7 +140,7 @@ if train_path.exists() or inf_path.exists():
 # ── Confusion matrices ────────────────────────────────────────────────────────
 cm_path = FIGURES_DIR / "confusion_matrices.png"
 if cm_path.exists():
-    st.subheader("Confusion Matrices: All Models (NB05 Evaluation)")
+    st.subheader("Confusion Matrices: Trained Models (NB05 Evaluation)")
     st.image(str(cm_path), use_container_width=True)
     st.divider()
 
@@ -244,7 +244,7 @@ with st.container(border=True):
         """
         | Finding | Details |
         |---|---|
-        | **Best trained model** | Logistic Regression (TF-IDF):; ~88.7% accuracy, 0.5s training |
+        | **Best trained model** | Logistic Regression (TF-IDF): ~88.7% accuracy, 0.5s training |
         | **LSTM vs LogReg** | Comparable accuracy, ~1,000× more training time |
         | **TF-IDF dominance** | Word-choice signal > sequence-order signal for IMDB sentiment |
         | **Random Forest weakness** | Sparse TF-IDF features poorly suited to tree-based splitting |
