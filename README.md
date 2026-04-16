@@ -329,7 +329,7 @@ Exact numbers may vary slightly between runs.
 
 ## Authors
 
-- **Lidor Shachar** - Data exploration, preprocessing pipeline, LogReg + NB models, report sections 1 / 3 / 4
-- **Christin Wøien Skattum** - SVM + Random Forest, LSTM model, model comparison, report sections 2 / 5 / 6
+- **Lidor Shachar**
+- **Christin Wøien Skattum**
 
 Course: AI3000R-1 Artificial Intelligence for Business Applications - Spring 2026
