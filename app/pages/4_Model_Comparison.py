@@ -220,7 +220,7 @@ try:
     model_errors = misclassified[misclassified["model"] == selected_model].head(5)
 
     for _, row in model_errors.iterrows():
-        true_label = "Positive ✓" if row["true_label"] == 1 else "Negative ✗"
+        true_label = "Positive" if row["true_label"] == 1 else "Negative"
         pred_label = "Positive" if row["predicted_label"] == 1 else "Negative"
         score      = float(row["model_score"])
 
