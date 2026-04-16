@@ -8,10 +8,11 @@ Usage:
 import nltk
 
 packages = [
-    ('stopwords', 'corpora/stopwords'),
-    ('wordnet',   'corpora/wordnet'),
-    ('omw-1.4',   'corpora/omw-1.4'),
-    ('averaged_perceptron_tagger', 'taggers/averaged_perceptron_tagger'),
+    ('stopwords',                    'corpora/stopwords'),
+    ('wordnet',                      'corpora/wordnet'),
+    ('omw-1.4',                      'corpora/omw-1.4'),
+    ('averaged_perceptron_tagger',     'taggers/averaged_perceptron_tagger'),
+    ('averaged_perceptron_tagger_eng', 'taggers/averaged_perceptron_tagger_eng'),
 ]
 
 print("Downloading NLTK data...\n")

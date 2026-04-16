@@ -8,7 +8,6 @@ import pandas as pd
 from joblib import dump
 from sklearn.base import BaseEstimator
 from sklearn.metrics import (
-    ConfusionMatrixDisplay,
     accuracy_score,
     f1_score,
     precision_score,
@@ -61,31 +60,56 @@ def plot_confusion_matrices_grid(
     n_cols: int = 2,
     figsize: tuple[int, int] = (12, 10),
 ) -> plt.Figure:
-    """Plot confusion matrices for multiple models in a single figure."""
+    """Plot confusion matrices for multiple models: green correct cells, red errors."""
+    import matplotlib.patches as mpatches
+    from sklearn.metrics import confusion_matrix as _cm
+
     if not predictions:
         raise ValueError("predictions must contain at least one model.")
 
     model_names = list(predictions.keys())
     n_models = len(model_names)
     n_rows = (n_models + n_cols - 1) // n_cols
+    labels = ("Positive", "Negative")
+    correct_color = "#27ae60"
+    wrong_color = "#e74c3c"
 
     fig, axes = plt.subplots(n_rows, n_cols, figsize=figsize)
     axes_list = axes.flatten() if hasattr(axes, "flatten") else [axes]
 
     for idx, model_name in enumerate(model_names):
-        ConfusionMatrixDisplay.from_predictions(
-            y_true,
-            predictions[model_name],
-            ax=axes_list[idx],
-            colorbar=False,
-            values_format="d",
-        )
-        axes_list[idx].set_title(model_name)
+        ax = axes_list[idx]
+        cm = _cm(y_true, predictions[model_name], labels=[1, 0])
+        n = len(labels)
+        for i in range(n):
+            for j in range(n):
+                color = correct_color if i == j else wrong_color
+                ax.add_patch(mpatches.FancyBboxPatch(
+                    (j - 0.5, i - 0.5), 1, 1,
+                    boxstyle="square,pad=0", fc=color, ec="white", lw=1.5,
+                ))
+                ax.text(j, i, f"{cm[i, j]:,}",
+                        ha="center", va="center",
+                        color="white", fontsize=11, fontweight="bold")
+        ax.set_xlim(-0.5, n - 0.5)
+        ax.set_ylim(n - 0.5, -0.5)
+        ax.set_xticks(range(n))
+        ax.set_xticklabels(labels, fontsize=8)
+        ax.set_yticks(range(n))
+        ax.set_yticklabels(labels, fontsize=8, rotation=90, va="center")
+        ax.set_xlabel("Predicted", fontsize=8)
+        ax.set_ylabel("True", fontsize=8)
+        ax.set_title(model_name, fontsize=9)
+        ax.tick_params(length=0)
 
     for idx in range(n_models, len(axes_list)):
         axes_list[idx].axis("off")
 
-    fig.tight_layout()
+    fig.suptitle(
+        "Confusion Matrices: Classic Models\nGreen = correct  |  Red = error",
+        fontsize=10,
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
     return fig
 
 

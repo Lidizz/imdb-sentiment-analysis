@@ -71,7 +71,7 @@ def train_lstm_model(
     """Train an LSTM model with early stopping and optional checkpointing.
 
     Returns:
-        (history, training_time_s) — Keras History object and total wall-clock
+        (history, training_time_s): Keras History object and total wall-clock
         training time in seconds.
     """
     y_train_array = _to_numpy_1d(y_train)

@@ -71,11 +71,11 @@ def lemmatize_text(text: str) -> str:
 def preprocess_text(text: str) -> str:
     """Full preprocessing pipeline:
 
-    1. HTML removal       — IMDB-specific noise (signal vs noise)
-    2. Lowercase          — 'Good' and 'good' are the same word
-    3. Special chars      — punctuation doesn't help bag-of-words models
-    4. Stopword removal   — 'the', 'is', 'at' carry no sentiment
-    5. Lemmatization      — reduces vocabulary size, groups related words
+    1. HTML removal       - IMDB-specific noise (signal vs noise)
+    2. Lowercase          - 'Good' and 'good' are the same word
+    3. Special chars      - punctuation doesn't help bag-of-words models
+    4. Stopword removal   - 'the', 'is', 'at' carry no sentiment
+    5. Lemmatization      - reduces vocabulary size, groups related words
     """
     text = remove_html_tags(text)
     text = to_lowercase(text)
