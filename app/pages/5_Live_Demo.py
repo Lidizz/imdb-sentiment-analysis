@@ -12,7 +12,6 @@ for _p in (str(_APP_DIR), str(_PROJECT_ROOT)):
 
 import importlib
 
-import numpy as np
 import streamlit as st
 from scipy.special import expit as _sigmoid
 
@@ -120,7 +119,14 @@ if analyse_btn and user_text.strip():
 
     # Preprocessing
     with st.spinner("Preprocessing text..."):
-        preprocessed = preprocess_text(user_text)
+        try:
+            preprocessed = preprocess_text(user_text)
+        except LookupError:
+            st.error("Preprocessing failed: required NLTK resources are missing. Run `download_nltk_data.py` and restart the app.")
+            st.stop()
+        except Exception as exc:
+            st.error(f"Preprocessing failed: {exc}")
+            st.stop()
 
     with st.expander("Preprocessing output (what the models receive)", expanded=False):
         c1, c2 = st.columns(2)
@@ -190,22 +196,21 @@ if analyse_btn and user_text.strip():
     MODEL_ORDER = ["Logistic Regression", "Linear SVM", "Naive Bayes", "Random Forest", "LSTM (Keras)"]
     available   = [m for m in MODEL_ORDER if m in results]
 
+    st.subheader("Predictions")
+
+    if not available:
+        st.warning("No model predictions available. Check that the models loaded successfully above.")
+        st.stop()
+
     pos_votes = sum(1 for m in available if results[m][0] == 1)
     neg_votes = len(available) - pos_votes
-    majority  = "Positive" if pos_votes > neg_votes else "Negative"
 
-    st.subheader("Predictions")
-    if majority == "Positive":
-        st.success(
-            f"**Overall verdict: POSITIVE** - "
-            f"{pos_votes}/{len(available)} models agree"
-        )
+    if pos_votes > neg_votes:
+        st.success(f"**Overall verdict: POSITIVE** - {pos_votes}/{len(available)} models agree")
+    elif neg_votes > pos_votes:
+        st.error(f"**Overall verdict: NEGATIVE** - {neg_votes}/{len(available)} models agree")
     else:
-        st.error(
-            f"**Overall verdict: NEGATIVE** - "
-            
-            f"{neg_votes}/{len(available)} models agree"
-        )
+        st.warning(f"**Overall verdict: TIE** - {pos_votes}/{len(available)} positive, {neg_votes}/{len(available)} negative")
 
     # ── Per-model cards ───────────────────────────────────────────────────────
     model_cols = st.columns(len(available))

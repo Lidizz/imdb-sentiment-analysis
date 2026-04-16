@@ -11,7 +11,6 @@ for _p in (str(_APP_DIR), str(_PROJECT_ROOT)):
         sys.path.insert(0, _p)
 
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -22,7 +21,6 @@ from _shared import (
     pct,
     fmt_f1,
     fmt_time,
-    fmt_ms,
 )
 
 st.set_page_config(
