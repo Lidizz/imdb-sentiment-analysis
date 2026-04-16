@@ -1,5 +1,5 @@
 """
-run_pipeline.py — Execute project notebooks in order.
+run_pipeline.py - Execute project notebooks in order.
 
 Usage
 -----
