@@ -112,15 +112,16 @@ import subprocess, sys
 
 PROJECT = '/content/imdb-sentiment-analysis'
 
+# Per-notebook timeouts (seconds). NB02 lemmatizes 35K reviews; NB04 trains LSTM.
 notebooks = [
-    'notebooks/01_data_exploration.ipynb',
-    'notebooks/02_preprocessing.ipynb',
-    'notebooks/03_classic_ml_models.ipynb',
-    'notebooks/04_deep_learning_model.ipynb',
-    'notebooks/05_model_comparison.ipynb',
+    ('notebooks/01_data_exploration.ipynb',    300),
+    ('notebooks/02_preprocessing.ipynb',      1800),
+    ('notebooks/03_classic_ml_models.ipynb',   600),
+    ('notebooks/04_deep_learning_model.ipynb', 7200),
+    ('notebooks/05_model_comparison.ipynb',    3600),
 ]
 
-for nb in notebooks:
+for nb, timeout in notebooks:
     print(f'\nRunning {nb} ...')
     result = subprocess.run(
         [
@@ -128,7 +129,7 @@ for nb in notebooks:
             '--to', 'notebook',
             '--execute',
             '--inplace',
-            '--ExecutePreprocessor.timeout=3600',
+            f'--ExecutePreprocessor.timeout={timeout}',
             nb,
         ],
         capture_output=True, text=True,

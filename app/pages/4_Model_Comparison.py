@@ -94,7 +94,7 @@ if pr_path.exists():
     st.subheader("Precision / Recall / F1 Breakdown")
     st.image(str(pr_path), use_container_width=True)
     st.caption(
-        "DistilBERT on preprocessed text shows high precision (0.916) and low recall (0.596), "
+        "DistilBERT on preprocessed text shows high precision (~0.921) and low recall (~0.600), "
         "it defaults to predicting 'negative' on malformed input, catching fewer positives."
     )
     st.divider()
@@ -129,9 +129,9 @@ if inf_path.exists():
 
 if train_path.exists() or inf_path.exists():
     st.caption(
-        "Linear models (LR, SVM, NB) train in under 1 second. "
-        "LSTM requires ~11 minutes (CPU), but runs in ~2 minutes on T4 GPU. "
-        "DistilBERT CPU inference is ~384–480 ms/review; GPU brings this to ~10 ms/review."
+        "Linear models (LR, SVM, NB) train in under 2 seconds. "
+        "LSTM requires ~11 minutes (CPU), runs in ~25 seconds on T4 GPU. "
+        "DistilBERT CPU inference is ~480 ms/review; GPU brings this to ~17 ms/review."
     )
     st.divider()
 
@@ -193,8 +193,8 @@ with st.expander("Detailed explanation of the mismatch"):
         **Precision = 0.916, Recall = 0.596** on preprocessed text shows the model defaults
         to predicting 'negative', it can't parse the truncated input and plays it safe.
 
-        **Bottom line:** DistilBERT on raw text (~92.7% accuracy) is the fair number.
-        The 77.7% result is an artifact of input format incompatibility, not architectural weakness.
+        **Bottom line:** DistilBERT on raw text (~89.3% accuracy) is the fair number.
+        The 77.4% result is an artifact of input format incompatibility, not architectural weakness.
         """
     )
 
@@ -242,12 +242,12 @@ with st.container(border=True):
         """
         | Finding | Details |
         |---|---|
-        | **Best trained model** | Logistic Regression (TF-IDF): ~88.7% accuracy, 0.5s training |
-        | **LSTM vs LogReg** | Comparable accuracy, ~1,000× more training time |
+        | **Best trained model** | Logistic Regression (TF-IDF): ~89.2% accuracy, 0.9s training |
+        | **LSTM vs LogReg** | Comparable accuracy, ~1,600× more training time |
         | **TF-IDF dominance** | Word-choice signal > sequence-order signal for IMDB sentiment |
         | **Random Forest weakness** | Sparse TF-IDF features poorly suited to tree-based splitting |
-        | **DistilBERT fair score** | ~92.7% on raw text (zero-shot, no fine-tuning) |
-        | **DistilBERT mismatch** | ~77.7% on preprocessed text: input format incompatibility |
+        | **DistilBERT fair score** | ~89.3% on raw text (zero-shot, no fine-tuning) |
+        | **DistilBERT mismatch** | ~77.4% on preprocessed text: input format incompatibility |
         | **Fastest inference** | Classic TF-IDF models: < 0.01 ms/review (batch) |
         """
     )

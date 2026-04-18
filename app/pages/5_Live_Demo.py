@@ -261,7 +261,7 @@ if analyse_btn and user_text.strip():
             **LSTM**: The sigmoid output layer directly produces P(positive) ∈ [0, 1].
             Threshold: 0.5 (balanced precision/recall).
 
-            **DistilBERT** is not included in the live demo: CPU inference takes ~2–3 seconds
-            per review. Run notebook 05 or use Colab for DistilBERT evaluation.
+            **DistilBERT** is not included in the live demo: CPU inference takes ~480ms
+            per review (~17ms on T4 GPU). Run notebook 05 or use Colab for DistilBERT evaluation.
             """
         )
