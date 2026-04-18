@@ -243,7 +243,7 @@ with st.container(border=True):
         | Finding | Details |
         |---|---|
         | **Best trained model** | Logistic Regression (TF-IDF): ~89.2% accuracy, 0.9s training |
-        | **LSTM vs LogReg** | Comparable accuracy, ~1,600× more training time |
+        | **LSTM vs LogReg** | Comparable accuracy at far greater training cost |
         | **TF-IDF dominance** | Word-choice signal > sequence-order signal for IMDB sentiment |
         | **Random Forest weakness** | Sparse TF-IDF features poorly suited to tree-based splitting |
         | **DistilBERT fair score** | ~89.3% on raw text (zero-shot, no fine-tuning) |

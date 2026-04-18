@@ -121,9 +121,9 @@ c6.metric("Patience",              "2 epochs")
 
 st.info(
     "Early stopping monitors `val_loss` and restores the best weights. "
-    "Training halted at epoch **4** and the best validation loss was at epoch **2**. "
-    "Train accuracy at stopping: 96.5% vs val accuracy 87.1%, the 9 pp gap confirms "
-    "mild overfitting that early stopping correctly caught."
+    "Training typically halts well before the 10-epoch maximum. "
+    "Train accuracy at stopping is noticeably higher than val accuracy, "
+    "confirming mild overfitting that early stopping correctly catches."
 )
 
 st.divider()
@@ -135,8 +135,8 @@ training_fig = FIGURES_DIR / "lstm_training_history.png"
 if training_fig.exists():
     st.image(str(training_fig), use_container_width=True)
     st.caption(
-        "Left: accuracy. Right: loss. Validation accuracy peaks at epoch 2 (88.0%) then plateaus. "
-        "The widening gap between train and val curves signals overfitting, early stopping fires at epoch 4."
+        "Left: accuracy. Right: loss. Validation accuracy peaks early then plateaus. "
+        "The widening gap between train and val curves signals overfitting; early stopping fires before max epochs."
     )
 else:
     st.info("Training history figure not found. Run notebook 04 to generate it.")
@@ -155,18 +155,16 @@ try:
 
     comp = pd.DataFrame([
         {
-            "Model":         "Logistic Regression (TF-IDF)",
-            "Val Accuracy":  pct(best_lr["accuracy"]),
-            "Val F1":        fmt_f1(best_lr["f1"]),
-            "Train Time":    fmt_time(best_lr["training_time_s"]),
-            "Inference":     "< 1 ms / review",
+            "Model":        "Logistic Regression (TF-IDF)",
+            "Val Accuracy": pct(best_lr["accuracy"]),
+            "Val F1":       fmt_f1(best_lr["f1"]),
+            "Train Time":   fmt_time(best_lr["training_time_s"]),
         },
         {
-            "Model":         "LSTM (Keras)",
-            "Val Accuracy":  pct(lstm_val["accuracy"]),
-            "Val F1":        fmt_f1(lstm_val["f1"]),
-            "Train Time":    fmt_time(lstm_val["training_time_s"]),
-            "Inference":     "~42 ms / review (CPU)",
+            "Model":        "LSTM (Keras)",
+            "Val Accuracy": pct(lstm_val["accuracy"]),
+            "Val F1":       fmt_f1(lstm_val["f1"]),
+            "Train Time":   fmt_time(lstm_val["training_time_s"]),
         },
     ])
     st.dataframe(comp, use_container_width=True, hide_index=True)
@@ -176,8 +174,9 @@ try:
     st.markdown(
         f"**Key finding:** LSTM achieves {pct(lstm_val['accuracy'])} vs {pct(best_lr['accuracy'])} "
         f"for Logistic Regression ({diff_str}). The LSTM required "
-        f"{fmt_time(lstm_val['training_time_s'])} of training vs {fmt_time(best_lr['training_time_s'])}. "
-        "The marginal accuracy difference does not justify the ~1,000× training cost increase, "
+        f"{fmt_time(lstm_val['training_time_s'])} of training on T4 GPU (vs ~11 min on CPU) "
+        f"compared to {fmt_time(best_lr['training_time_s'])} for Logistic Regression. "
+        "The marginal accuracy difference does not justify the training cost increase, "
         "suggesting word-choice signal dominates sequence-order signal for IMDB binary sentiment."
     )
 
