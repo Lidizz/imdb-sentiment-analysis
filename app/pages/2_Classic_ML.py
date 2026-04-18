@@ -83,8 +83,9 @@ try:
         fig2.update_traces(textposition="outside")
         fig2.update_layout(showlegend=False, height=360, margin=dict(t=30))
         st.plotly_chart(fig2, use_container_width=True)
+        bigram_gain = (ngram.iloc[1]["val_f1"] - ngram.iloc[0]["val_f1"]) * 100
         st.caption(
-            "Bigrams add **+0.2 pp F1** by capturing phrase-level sentiment cues like "
+            f"Bigrams add **+{bigram_gain:.1f} pp F1** by capturing phrase-level sentiment cues like "
             "`'not good'`, `'very bad'`. Bigrams adopted as default."
         )
 

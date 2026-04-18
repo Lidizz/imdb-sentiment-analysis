@@ -155,9 +155,15 @@ try:
     fig.update_layout(showlegend=False, title_x=0.0)
     st.plotly_chart(fig, use_container_width=True)
 
+    try:
+        lr_t   = fmt_time(df[df["model"].str.contains("Logistic Regression", na=False)].iloc[0]["training_time_s"])
+        lstm_t = fmt_time(df[df["model"].str.contains("LSTM", na=False)].iloc[0]["training_time_s"])
+        cost_note = f"({lr_t} CPU vs {lstm_t} on T4 GPU, ~11 min on CPU)"
+    except (IndexError, KeyError):
+        cost_note = ""
     st.markdown(
-        "**Key finding:** Logistic Regression matches the LSTM in accuracy at a fraction of the training cost "
-        "(0.5s vs 11 min). Word-choice signal dominates sequence-order signal for IMDB binary sentiment."
+        f"**Key finding:** Logistic Regression matches the LSTM in accuracy at a fraction of the training cost "
+        f"{cost_note}. Word-choice signal dominates sequence-order signal for IMDB binary sentiment."
     )
 
 except FileNotFoundError:
