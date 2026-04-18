@@ -22,7 +22,7 @@ _NEGATION_WORDS = {
     'nothing', 'nowhere', 'hardly', 'barely', 'scarcely'
 }
 
-_STOP_WORDS = set(stopwords.words('english')) - _NEGATION_WORDS
+_STOP_WORDS = set(stopwords.words('english')) - _NEGATION_WORDS  # preserve negation; "not good" != "good"
 _LEMMATIZER = WordNetLemmatizer()
 
 def _to_wordnet_pos(treebank_tag: str) -> str:

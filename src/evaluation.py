@@ -1,7 +1,7 @@
 """Evaluation helpers for classic sentiment models."""
 
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Dict, Iterable
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -15,7 +15,7 @@ from sklearn.metrics import (
 )
 
 
-def compute_metrics(y_true: Iterable[int], y_pred: Iterable[int]) -> Dict[str, float]:
+def compute_metrics(y_true: Iterable[int], y_pred: Iterable[int]) -> dict[str, float]:
     """Return standard binary classification metrics.
 
     Literature note (book Ch. 5): report precision, recall, and F1 alongside
@@ -31,7 +31,7 @@ def compute_metrics(y_true: Iterable[int], y_pred: Iterable[int]) -> Dict[str, f
 
 def build_model_comparison_table(
     y_true: Iterable[int],
-    predictions: Dict[str, Iterable[int]],
+    predictions: dict[str, Iterable[int]],
     split_name: str = "validation",
 ) -> pd.DataFrame:
     """Build a tidy model-comparison table from prediction arrays."""
@@ -56,7 +56,7 @@ def save_metrics_table(df: pd.DataFrame, output_path: Path) -> None:
 
 def plot_confusion_matrices_grid(
     y_true: Iterable[int],
-    predictions: Dict[str, Iterable[int]],
+    predictions: dict[str, Iterable[int]],
     n_cols: int = 2,
     figsize: tuple[int, int] = (12, 10),
 ) -> plt.Figure:
@@ -113,7 +113,7 @@ def plot_confusion_matrices_grid(
     return fig
 
 
-def save_models(models: Dict[str, BaseEstimator], models_dir: Path) -> None:
+def save_models(models: dict[str, BaseEstimator], models_dir: Path) -> None:
     """Serialize fitted models to joblib files."""
     models_dir.mkdir(parents=True, exist_ok=True)
     for model_name, model in models.items():
