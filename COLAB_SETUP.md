@@ -5,7 +5,7 @@ Running notebooks on Colab provides free GPU access, which significantly reduces
 | Notebook | Local (CPU) | Colab (T4 GPU) |
 |---|---|---|
 | NB03 - Classic ML training | ~1-2 min | ~15 sec |
-| NB04 - LSTM training | ~11 min | ~2-3 min |
+| NB04 - LSTM training | ~11 min | ~25 sec |
 | NB05 - DistilBERT inference (7,500 rows) | ~45 min | ~3-5 min |
 | NB01, NB02 - EDA + Preprocessing | ~1-2 min | ~1-2 min |
 
@@ -112,7 +112,7 @@ import subprocess, sys
 
 PROJECT = '/content/imdb-sentiment-analysis'
 
-# Per-notebook timeouts (seconds). NB02 lemmatizes 35K reviews; NB04 trains LSTM.
+# Per-notebook timeouts (seconds)
 notebooks = [
     ('notebooks/01_data_exploration.ipynb',    300),
     ('notebooks/02_preprocessing.ipynb',      1800),
