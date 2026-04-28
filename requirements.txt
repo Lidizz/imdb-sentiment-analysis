@@ -11,25 +11,18 @@ matplotlib==3.8.3
 seaborn==0.13.2
 
 # Classic ML models
-scikit-learn==1.4.1.post1
+scikit-learn==1.8.0
 
-# Deep Learning Core (Cross-Platform)
-tensorflow-intel==2.16.1; sys_platform == 'win32'
-tensorflow==2.16.1; sys_platform != 'win32'
-keras==3.0.5
-
-# Version-lock dependencies (Windows fixes)
-ml-dtypes==0.3.2; sys_platform == 'win32'
-protobuf==4.25.9; sys_platform == 'win32'
-dm-tree==0.1.10
+# Deep Learning Core
+tensorflow==2.21.0
+keras==3.14.0
 
 # NLP utilities
 nltk==3.8.1
 
 # Pre-trained Transformer baseline
 transformers==4.38.2
-tf-keras==2.16.0
-# If you get an error, run this in your terminal first: set USE_TF=1 
+tf-keras==2.21.0
 
 # Jupyter Notebook
 jupyter==1.0.0
@@ -43,43 +36,3 @@ joblib==1.3.2
 # Streamlit presentation app (app/app.py)
 streamlit>=1.35.0
 plotly>=5.18.0
-
-# scikit-learn-Classes used:
-#   sklearn.feature_extraction.text -> CountVectorizer, TfidfVectorizer
-#   sklearn.linear_model            -> LogisticRegression
-#   sklearn.naive_bayes             -> MultinomialNB
-#   sklearn.svm                     -> LinearSVC
-#   sklearn.ensemble                -> RandomForestClassifier
-#   sklearn.model_selection         -> train_test_split, GridSearchCV, cross_val_score
-#   sklearn.metrics                 -> classification_report, confusion_matrix,
-#                                      accuracy_score, f1_score
-
-# tensorflow-Classes used:
-#   tensorflow.keras.models    -> Sequential
-#   tensorflow.keras.layers    -> Embedding, LSTM, Dense, Dropout, Bidirectional
-#   tensorflow.keras.callbacks -> EarlyStopping, ModelCheckpoint
-#   keras                      -> Tokenizer, pad_sequences
-
-# nltk-Classes used:
-#   nltk.corpus -> stopwords
-#   nltk.stem   -> WordNetLemmatizer
-
-# transformers-Classes used:
-#   transformers -> pipeline
-
-
-
-
-
-# ### Fast validation after code changes
-
-# If you changed code in `src/` and want a quick sanity check without rerunning all notebooks:
-
-# ```powershell
-# python quick_smoke_check.py
-# ```
-
-# This runs a tiny end-to-end smoke test for:
-# - TF-IDF + Linear SVM path
-# - Tokenization + padding path
-# - LSTM build/train/evaluate path (1 mini epoch on tiny synthetic data)
