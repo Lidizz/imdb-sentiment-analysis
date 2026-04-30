@@ -5,7 +5,7 @@ Running notebooks on Colab provides free GPU access, which significantly reduces
 | Notebook | Local (CPU) | Colab (T4 GPU) |
 |---|---|---|
 | NB03 - Classic ML training | ~1-2 min | ~15 sec |
-| NB04 - LSTM training | ~11 min | ~25 sec |
+| NB04 - LSTM training | ~11 min | 25–50 sec |
 | NB05 - DistilBERT inference (7,500 rows) | ~45 min | ~3-5 min |
 | NB01, NB02 - EDA + Preprocessing | ~1-2 min | ~1-2 min |
 
@@ -13,7 +13,7 @@ Running notebooks on Colab provides free GPU access, which significantly reduces
 
 ## How Colab works (important before starting)
 
-Colab runs on Google's server, not your laptop. Each notebook you open in Colab gets its own isolated VM - if you open NB01 in one tab and NB02 in another, they are on completely separate machines and cannot share files.
+Colab runs on Google's server, not your machine. Each notebook you open in Colab gets its own isolated VM - if you open NB01 in one tab and NB02 in another, they are on completely separate machines and cannot share files.
 
 **The correct approach for running all five notebooks in sequence:** open a single blank Colab notebook, run setup once, then execute all project notebooks from that one session using `nbconvert`. All notebooks share the same filesystem within the session, so NB03 can read what NB02 wrote, and so on.
 
@@ -27,7 +27,7 @@ Upload `IMDB Dataset.csv` to Google Drive so you don't have to re-upload it each
 
 1. Open [drive.google.com](https://drive.google.com)
 2. Create a folder: `My Drive/imdb-project/`
-3. Upload your local `data/IMDB Dataset.csv` (~63 MB) into that folder
+3. Upload your local `data/IMDB Dataset.csv` into that folder
 
 This is a one-time step. The file stays in Drive and is available in every future Colab session.
 
@@ -143,7 +143,8 @@ for nb, timeout in notebooks:
         break
 ```
 
-Expected total runtime on T4 GPU: **~25-35 minutes** for all five notebooks.
+Expected total runtime on T4 GPU: **~15-35 minutes** for all five notebooks.
+- Usually took me 15-20 minutes, but ocationally the GPU crashed midway and i had to start over.
 
 To run a single notebook instead (e.g. only NB05 after uploading saved models):
 
@@ -172,13 +173,19 @@ files.download('/content/results.zip')
 shutil.make_archive('/content/models', 'zip',
                     '/content/imdb-sentiment-analysis/models')
 files.download('/content/models.zip')
+
+# Download notebooks files
+shutil.make_archive('/content/notebooks', 'zip', 
+                    '/content/imdb-sentiment-analysis/notebooks')
+files.download('/content/notebooks.zip')
 ```
 
-Unzip both archives locally and replace the contents of your `results/` and `models/` directories.
+Unzip all three archives locally and replace the contents of your `results/`, `models/`, and `notebooks/` directories.
+- If you want, save the old folders elsewhere for reference and comparison - we use the same seed so it is reproducible.
 
 ---
 
-## Running NB05 only (if models already exist locally)
+## Running NB05 only (if models already exist locally - not recommended)
 
 If NB01-NB04 have already been run locally and you only want to re-run the model comparison and DistilBERT evaluation on Colab:
 
@@ -207,9 +214,4 @@ print('Models and preprocessed data ready.')
 ## Notes
 
 - **Session timeout:** Colab free tier disconnects after ~90 minutes of inactivity and gives ~4-12 hours of GPU per day. If the session disconnects mid-run, restart from Step 2 (the Drive mount persists, so you do not need to re-upload the dataset).
-- **Sample sizes in NB05:** The two constants in the NB05 setup cell control evaluation scope. They default to 500/300 for quick testing. For a final full-quality run set both to 7500 before executing.
-
-```python
-COMMON_SAMPLE_SIZE = 7500   # rows for classic ML + LSTM evaluation
-BERT_SAMPLE_SIZE   = 7500   # rows for DistilBERT evaluation
-```
+- **On GPU error:** As mentioned earlier - if the GPU fails, disconnect from it and reconnect to a fresh T4 GPU and re-run the cells.

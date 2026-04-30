@@ -39,7 +39,7 @@ st.title("🎬 IMDB Sentiment Analysis")
 st.markdown(
     "**Binary sentiment classification on 50,000 IMDB movie reviews.**  \n"
     "We compare four classic ML models (TF-IDF features) against an LSTM deep learning model "
-    "and a pre-trained Transformer baseline."
+    "and a pre-trained Transformer."
 )
 st.caption(
     "AI3000R · Artificial Intelligence for Business Applications · Spring 2026 · "

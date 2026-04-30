@@ -130,7 +130,7 @@ if inf_path.exists():
 if train_path.exists() or inf_path.exists():
     st.caption(
         "Linear models (LR, SVM, NB) train in under 2 seconds. "
-        "LSTM requires ~11 minutes (CPU), runs in ~25 seconds on T4 GPU. "
+        "LSTM requires ~11 minutes (CPU), runs in 25–50 seconds on T4 GPU. "
         "DistilBERT CPU inference is ~480 ms/review; GPU brings this to ~17 ms/review."
     )
     st.divider()
@@ -138,7 +138,7 @@ if train_path.exists() or inf_path.exists():
 # ── Confusion matrices ────────────────────────────────────────────────────────
 cm_path = FIGURES_DIR / "confusion_matrices.png"
 if cm_path.exists():
-    st.subheader("Confusion Matrices: Trained Models (NB05 Evaluation)")
+    st.subheader("Confusion Matrices: All Trained Models")
     st.image(str(cm_path), use_container_width=True)
     st.divider()
 
