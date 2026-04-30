@@ -16,11 +16,7 @@ from sklearn.metrics import (
 
 
 def compute_metrics(y_true: Iterable[int], y_pred: Iterable[int]) -> dict[str, float]:
-    """Return standard binary classification metrics.
-
-    Literature note (book Ch. 5): report precision, recall, and F1 alongside
-    accuracy to avoid over-relying on a single metric.
-    """
+    """Return accuracy, precision, recall, and F1 for binary classification."""
     return {
         "accuracy": float(accuracy_score(y_true, y_pred)),
         "precision": float(precision_score(y_true, y_pred, zero_division=0)),

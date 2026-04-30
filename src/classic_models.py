@@ -43,8 +43,7 @@ def train_logistic_regression(
 ) -> ModelResult:
     """Train Logistic Regression on sparse TF-IDF features.
 
-    Literature note (book Ch. 5): Logistic Regression is a strong linear baseline
-    for classification and provides interpretable feature coefficients.
+    Strong linear baseline that provides interpretable feature coefficients.
     """
     model = LogisticRegression(
         C=C,
@@ -63,8 +62,7 @@ def train_naive_bayes(
 ) -> ModelResult:
     """Train Multinomial Naive Bayes baseline for text classification.
 
-    Literature note (book Ch. 5 + Ch. 15): NB is commonly used for text features
-    such as counts and TF-IDF despite the conditional-independence assumption.
+    Commonly used for text features such as counts and TF-IDF despite the conditional-independence assumption.
     """
     model = MultinomialNB(alpha=alpha)
     return _fit_predict_report(model, X_train, y_train, X_eval, y_eval)
@@ -80,8 +78,7 @@ def train_svm(
 ) -> ModelResult:
     """Train Linear SVM for high-dimensional sparse text features.
 
-    Literature note (book Ch. 5): SVM seeks a margin-maximizing hyperplane,
-    which often performs well on sparse high-dimensional representations.
+    Seeks a margin-maximizing hyperplane; performs well on sparse high-dimensional representations.
     """
     model = LinearSVC(
         C=C,
@@ -102,8 +99,7 @@ def train_random_forest(
 ) -> ModelResult:
     """Train Random Forest as the ensemble-learning comparator.
 
-    Literature note (book Ch. 6): Random Forest reduces variance via bagging and
-    provides feature-importance signals that support interpretation.
+    Reduces variance via bagging and provides feature-importance signals for interpretation.
     """
     model = RandomForestClassifier(
         n_estimators=n_estimators,
@@ -123,8 +119,7 @@ def hyperparameter_tuning(
 ) -> GridSearchCV:
     """Run GridSearchCV for Logistic Regression hyperparameter tuning.
 
-    Literature note (book Ch. 6): grid search is used to find stronger parameter
-    settings than default values while controlling search space explicitly.
+    Finds stronger parameter settings than defaults while controlling the search space explicitly.
     """
     if param_grid is None:
         param_grid = {"C": [0.01, 0.1, 1.0, 10.0, 100.0]}
