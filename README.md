@@ -293,7 +293,7 @@ Each notebook imports reusable logic from `src/`, no duplicated code between not
 | Logistic Regression | Classic ML | TF-IDF (unigrams + bigrams) |
 | Multinomial Naive Bayes | Classic ML | TF-IDF |
 | Linear SVM | Classic ML | TF-IDF |
-| Random Forest | Ensemble ML | TF-IDF + GridSearchCV tuning |
+| Random Forest | Ensemble ML | TF-IDF |
 | LSTM | Deep Learning | Trainable word embeddings |
 | Pre-trained Transformer | Zero-shot baseline | Hugging Face `distilbert-base-uncased-finetuned-sst-2-english` |
 
@@ -314,13 +314,13 @@ All models evaluated on the same held-out test set (7,500 rows, 15% stratified s
 |---|---|---|---|
 | DistilBERT (raw text) | ~89.3% | ~0.890 | Zero-shot inference, no fine-tuning |
 | Logistic Regression (TF-IDF) | ~89.2% | ~0.893 | Best trained model |
-| LSTM (Keras) | ~88.7% | ~0.888 | Sequence-aware deep learning |
+| LSTM (Keras) | ~88.4% | ~0.887 | Sequence-aware deep learning |
 | Linear SVM (TF-IDF) | ~88.7% | ~0.887 | Close to LogReg |
 | Naive Bayes (TF-IDF) | ~86.9% | ~0.871 | Fast probabilistic baseline |
 | Random Forest (TF-IDF) | ~85.7% | ~0.857 | GridSearchCV tuned |
 | DistilBERT (preprocessed text) | ~77.4% | ~0.727 | Preprocessing mismatch (see notebook 05) |
 
-**Key finding:** A simple TF-IDF + Logistic Regression (89.2%) matches a zero-shot DistilBERT transformer (89.3%) on this task — showing that word-choice signal dominates for IMDB sentiment. DistilBERT's low score on preprocessed text (77.4%) reflects input format incompatibility, not architectural weakness.
+**Key finding:** A simple TF-IDF + Logistic Regression (89.2%) matches a zero-shot DistilBERT transformer (89.3%) on this task - showing that word-choice signal dominates for IMDB sentiment. DistilBERT's low score on preprocessed text (77.4%) reflects input format incompatibility, not architectural weakness.
 
 ---
 
