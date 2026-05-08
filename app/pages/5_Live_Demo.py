@@ -26,9 +26,7 @@ st.set_page_config(
 
 st.title("🎯 Live Sentiment Prediction Demo")
 st.markdown(
-    "Enter any movie review and see all five trained models predict its sentiment simultaneously.  \n"
-    "Models are loaded from the saved artifacts in `models/`. "
-    "Preprocessing is applied live using the same pipeline as training."
+    "Enter any movie review and see all five trained models predict its sentiment simultaneously."
 )
 st.divider()
 
@@ -96,12 +94,20 @@ EXAMPLES = {
     ),
 }
 
-example_key = st.selectbox("Load an example or write your own:", list(EXAMPLES.keys()))
-default_text = EXAMPLES[example_key]
+def _on_example_change():
+    selected = st.session_state["example_selector"]
+    if selected != "Custom input: write your own":
+        st.session_state["review_input"] = EXAMPLES[selected]
+
+example_key = st.selectbox(
+    "Load an example or write your own:",
+    list(EXAMPLES.keys()),
+    key="example_selector",
+    on_change=_on_example_change,
+)
 
 user_text = st.text_area(
     "Movie review text:",
-    value=default_text,
     height=120,
     placeholder="Type or paste a movie review here...",
     key="review_input",
