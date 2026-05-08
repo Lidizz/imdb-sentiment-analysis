@@ -17,3 +17,4 @@ patch*_*.py
 quick_smoke_check.py
 peer_review/
 reflections/
+report/
